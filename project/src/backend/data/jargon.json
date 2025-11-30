@@ -1,0 +1,1003 @@
+[
+  {
+    "word": "aangezien",
+    "alternatives": [
+      "omdat",
+      "want"
+    ]
+  },
+  {
+    "word": "betreffende",
+    "alternatives": [
+      "over",
+      "voor"
+    ]
+  },
+  {
+    "word": "conform",
+    "alternatives": [
+      "volgens",
+      "zoals afgesproken"
+    ]
+  },
+  {
+    "word": "derhalve",
+    "alternatives": [
+      "daarom",
+      "dus"
+    ]
+  },
+  {
+    "word": "echter",
+    "alternatives": [
+      "maar"
+    ]
+  },
+  {
+    "word": "gaarne",
+    "alternatives": [
+      "graag"
+    ]
+  },
+  {
+    "word": "indien",
+    "alternatives": [
+      "als"
+    ]
+  },
+  {
+    "word": "inzake",
+    "alternatives": [
+      "over"
+    ]
+  },
+  {
+    "word": "middels",
+    "alternatives": [
+      "met",
+      "door"
+    ]
+  },
+  {
+    "word": "nevenstaande",
+    "alternatives": [
+      "deze",
+      "die hiernaast staat"
+    ]
+  },
+  {
+    "word": "omtrent",
+    "alternatives": [
+      "over"
+    ]
+  },
+  {
+    "word": "tevens",
+    "alternatives": [
+      "ook"
+    ]
+  },
+  {
+    "word": "verzoeken",
+    "alternatives": [
+      "vragen"
+    ]
+  },
+  {
+    "word": "wederom",
+    "alternatives": [
+      "weer",
+      "opnieuw"
+    ]
+  },
+  {
+    "word": "onderhavige",
+    "alternatives": [
+      "deze",
+      "dit"
+    ]
+  },
+  {
+    "word": "bescheiden",
+    "alternatives": [
+      "documenten",
+      "papieren"
+    ]
+  },
+  {
+    "word": "teneinde",
+    "alternatives": [
+      "om",
+      "zodat"
+    ]
+  },
+  {
+    "word": "inherente",
+    "alternatives": [
+      "eigen",
+      "van zichzelf"
+    ]
+  },
+  {
+    "word": "complexiteit",
+    "alternatives": [
+      "ingewikkeldheid",
+      "moeilijkheid"
+    ]
+  },
+  {
+    "word": "jurisprudentie",
+    "alternatives": [
+      "rechtspraak",
+      "eerdere uitspraken"
+    ]
+  },
+  {
+    "word": "fiscale",
+    "alternatives": [
+      "belasting-"
+    ]
+  },
+  {
+    "word": "hervormingen",
+    "alternatives": [
+      "veranderingen",
+      "vernieuwingen"
+    ]
+  },
+  {
+    "word": "discursieve",
+    "alternatives": [
+      "redenerende",
+      "beschouwende"
+    ]
+  },
+  {
+    "word": "analyse",
+    "alternatives": [
+      "onderzoek",
+      "bestudering"
+    ]
+  },
+  {
+    "word": "doch",
+    "alternatives": [
+      "maar"
+    ]
+  },
+  {
+    "word": "reeds",
+    "alternatives": [
+      "al"
+    ]
+  },
+  {
+    "word": "te allen tijde",
+    "alternatives": [
+      "altijd"
+    ]
+  },
+  {
+    "word": "vooralsnog",
+    "alternatives": [
+      "voorlopig",
+      "nu nog"
+    ]
+  },
+  {
+    "word": "jongstleden",
+    "alternatives": [
+      "afgelopen",
+      "vorige"
+    ]
+  },
+  {
+    "word": "aanvankelijk",
+    "alternatives": [
+      "eerst",
+      "in het begin"
+    ]
+  },
+  {
+    "word": "bemerken",
+    "alternatives": [
+      "zien",
+      "merken"
+    ]
+  },
+  {
+    "word": "constateren",
+    "alternatives": [
+      "vaststellen",
+      "zien"
+    ]
+  },
+  {
+    "word": "identiek",
+    "alternatives": [
+      "hetzelfde"
+    ]
+  },
+  {
+    "word": "implementeren",
+    "alternatives": [
+      "invoeren",
+      "uitvoeren"
+    ]
+  },
+  {
+    "word": "componenten",
+    "alternatives": [
+      "onderdelen"
+    ]
+  },
+  {
+    "word": "concept",
+    "alternatives": [
+      "ontwerp",
+      "idee"
+    ]
+  },
+  {
+    "word": "consequentie",
+    "alternatives": [
+      "gevolg"
+    ]
+  },
+  {
+    "word": "definitief",
+    "alternatives": [
+      "uiteindelijk",
+      "vast"
+    ]
+  },
+  {
+    "word": "diverse",
+    "alternatives": [
+      "verschillende"
+    ]
+  },
+  {
+    "word": "eventueel",
+    "alternatives": [
+      "mogelijk"
+    ]
+  },
+  {
+    "word": "frequent",
+    "alternatives": [
+      "vaak"
+    ]
+  },
+  {
+    "word": "garanderen",
+    "alternatives": [
+      "zeker weten",
+      "beloven"
+    ]
+  },
+  {
+    "word": "hanteren",
+    "alternatives": [
+      "gebruiken"
+    ]
+  },
+  {
+    "word": "incidenteel",
+    "alternatives": [
+      "af en toe"
+    ]
+  },
+  {
+    "word": "indicatie",
+    "alternatives": [
+      "aanwijzing"
+    ]
+  },
+  {
+    "word": "intensief",
+    "alternatives": [
+      "heftig",
+      "sterk"
+    ]
+  },
+  {
+    "word": "modificeren",
+    "alternatives": [
+      "aanpassen",
+      "veranderen"
+    ]
+  },
+  {
+    "word": "noodzakelijk",
+    "alternatives": [
+      "nodig"
+    ]
+  },
+  {
+    "word": "observeren",
+    "alternatives": [
+      "bekijken",
+      "zien"
+    ]
+  },
+  {
+    "word": "optimaal",
+    "alternatives": [
+      "best",
+      "zo goed mogelijk"
+    ]
+  },
+  {
+    "word": "participeren",
+    "alternatives": [
+      "meedoen"
+    ]
+  },
+  {
+    "word": "permanent",
+    "alternatives": [
+      "blijvend",
+      "vast"
+    ]
+  },
+  {
+    "word": "potentieel",
+    "alternatives": [
+      "mogelijk"
+    ]
+  },
+  {
+    "word": "preventie",
+    "alternatives": [
+      "voorkomen"
+    ]
+  },
+  {
+    "word": "procedure",
+    "alternatives": [
+      "werkwijze",
+      "gang van zaken"
+    ]
+  },
+  {
+    "word": "realiseren",
+    "alternatives": [
+      "maken",
+      "uitvoeren",
+      "beseffen"
+    ]
+  },
+  {
+    "word": "reductie",
+    "alternatives": [
+      "vermindering"
+    ]
+  },
+  {
+    "word": "relatief",
+    "alternatives": [
+      "naar verhouding",
+      "tamelijk"
+    ]
+  },
+  {
+    "word": "resulteren",
+    "alternatives": [
+      "leiden tot"
+    ]
+  },
+  {
+    "word": "specifiek",
+    "alternatives": [
+      "bijzonder",
+      "precies"
+    ]
+  },
+  {
+    "word": "stimuleren",
+    "alternatives": [
+      "aanmoedigen"
+    ]
+  },
+  {
+    "word": "transparant",
+    "alternatives": [
+      "duidelijk",
+      "doorzichtig"
+    ]
+  },
+  {
+    "word": "urgent",
+    "alternatives": [
+      "dringend"
+    ]
+  },
+  {
+    "word": "variëren",
+    "alternatives": [
+      "wisselen"
+    ]
+  },
+  {
+    "word": "vereisen",
+    "alternatives": [
+      "vragen",
+      "nodig hebben"
+    ]
+  },
+  {
+    "word": "alsmede",
+    "alternatives": [
+      "en",
+      "ook"
+    ]
+  },
+  {
+    "word": "alsnog",
+    "alternatives": [
+      "toch nog"
+    ]
+  },
+  {
+    "word": "bijgevolg",
+    "alternatives": [
+      "daardoor",
+      "dus"
+    ]
+  },
+  {
+    "word": "blijkens",
+    "alternatives": [
+      "volgens",
+      "zo blijkt uit"
+    ]
+  },
+  {
+    "word": "blijkbaar",
+    "alternatives": [
+      "kennelijk",
+      "zo te zien"
+    ]
+  },
+  {
+    "word": "blijkgeven van",
+    "alternatives": [
+      "laten zien"
+    ]
+  },
+  {
+    "word": "desalniettemin",
+    "alternatives": [
+      "toch",
+      "niettemin"
+    ]
+  },
+  {
+    "word": "destijds",
+    "alternatives": [
+      "toen",
+      "in die tijd"
+    ]
+  },
+  {
+    "word": "doen toekomen",
+    "alternatives": [
+      "sturen",
+      "geven"
+    ]
+  },
+  {
+    "word": "eventualiteit",
+    "alternatives": [
+      "mogelijkheid"
+    ]
+  },
+  {
+    "word": "expliciet",
+    "alternatives": [
+      "duidelijk",
+      "nadrukkelijk"
+    ]
+  },
+  {
+    "word": "feitelijk",
+    "alternatives": [
+      "eigenlijk",
+      "in werkelijkheid"
+    ]
+  },
+  {
+    "word": "geëigend",
+    "alternatives": [
+      "geschikt",
+      "passend"
+    ]
+  },
+  {
+    "word": "gevalideerd",
+    "alternatives": [
+      "goedgekeurd",
+      "bevestigd"
+    ]
+  },
+  {
+    "word": "inzien",
+    "alternatives": [
+      "bekijken",
+      "begrijpen"
+    ]
+  },
+  {
+    "word": "laatstgenoemde",
+    "alternatives": [
+      "de laatste",
+      "deze"
+    ]
+  },
+  {
+    "word": "met inachtneming van",
+    "alternatives": [
+      "terwijl we rekening houden met"
+    ]
+  },
+  {
+    "word": "naar aanleiding van",
+    "alternatives": [
+      "door",
+      "vanwege",
+      "over"
+    ]
+  },
+  {
+    "word": "onverwijld",
+    "alternatives": [
+      "meteen",
+      "direct"
+    ]
+  },
+  {
+    "word": "op grond van",
+    "alternatives": [
+      "door",
+      "vanwege"
+    ]
+  },
+  {
+    "word": "overwegende",
+    "alternatives": [
+      "omdat",
+      "terwijl we bedenken dat"
+    ]
+  },
+  {
+    "word": "per omgaande",
+    "alternatives": [
+      "direct",
+      "meteen"
+    ]
+  },
+  {
+    "word": "primair",
+    "alternatives": [
+      "vooral",
+      "in de eerste plaats"
+    ]
+  },
+  {
+    "word": "ter attentie van",
+    "alternatives": [
+      "voor"
+    ]
+  },
+  {
+    "word": "ter zake van",
+    "alternatives": [
+      "over",
+      "wat betreft"
+    ]
+  },
+  {
+    "word": "ten aanzien van",
+    "alternatives": [
+      "over",
+      "met betrekking tot"
+    ]
+  },
+  {
+    "word": "ten behoeve van",
+    "alternatives": [
+      "voor"
+    ]
+  },
+  {
+    "word": "ten gevolge van",
+    "alternatives": [
+      "door",
+      "vanwege"
+    ]
+  },
+  {
+    "word": "totale",
+    "alternatives": [
+      "hele",
+      "gehele"
+    ]
+  },
+  {
+    "word": "uitvoerig",
+    "alternatives": [
+      "uitgebreid",
+      "lang"
+    ]
+  },
+  {
+    "word": "voorafgaand aan",
+    "alternatives": [
+      "voor"
+    ]
+  },
+  {
+    "word": "voorts",
+    "alternatives": [
+      "bovendien",
+      "verder"
+    ]
+  },
+  {
+    "word": "zodoende",
+    "alternatives": [
+      "op die manier",
+      "dus"
+    ]
+  },
+  {
+    "word": "abusievelijk",
+    "alternatives": [
+      "per ongeluk",
+      "foutief"
+    ]
+  },
+  {
+    "word": "afdoende",
+    "alternatives": [
+      "voldoende",
+      "goed genoeg"
+    ]
+  },
+  {
+    "word": "bepalen",
+    "alternatives": [
+      "zeggen",
+      "vastleggen"
+    ]
+  },
+  {
+    "word": "berekenen",
+    "alternatives": [
+      "uitrekenen"
+    ]
+  },
+  {
+    "word": "bestendigen",
+    "alternatives": [
+      "laten voortbestaan",
+      "vasthouden aan"
+    ]
+  },
+  {
+    "word": "contemplatief",
+    "alternatives": [
+      "beschouwend",
+      "nadenkend"
+    ]
+  },
+  {
+    "word": "coördineren",
+    "alternatives": [
+      "regelen",
+      "afstemmen"
+    ]
+  },
+  {
+    "word": "destructief",
+    "alternatives": [
+      "verwoestend",
+      "schadelijk"
+    ]
+  },
+  {
+    "word": "discrepantie",
+    "alternatives": [
+      "verschil",
+      "afwijking"
+    ]
+  },
+  {
+    "word": "efficiënt",
+    "alternatives": [
+      "snel en goed",
+      "handig"
+    ]
+  },
+  {
+    "word": "eindigen",
+    "alternatives": [
+      "stoppen",
+      "ophouden"
+    ]
+  },
+  {
+    "word": "elimineren",
+    "alternatives": [
+      "weghalen",
+      "verwijderen"
+    ]
+  },
+  {
+    "word": "faciliteren",
+    "alternatives": [
+      "makkelijker maken",
+      "helpen"
+    ]
+  },
+  {
+    "word": "gedurende",
+    "alternatives": [
+      "tijdens"
+    ]
+  },
+  {
+    "word": "geëffectueerd",
+    "alternatives": [
+      "uitgevoerd",
+      "gedaan"
+    ]
+  },
+  {
+    "word": "geenszins",
+    "alternatives": [
+      "helemaal niet"
+    ]
+  },
+  {
+    "word": "hoewel",
+    "alternatives": [
+      "ook al",
+      "ofschoon"
+    ]
+  },
+  {
+    "word": "immers",
+    "alternatives": [
+      "want",
+      "toch"
+    ]
+  },
+  {
+    "word": "in het kader van",
+    "alternatives": [
+      "met het doel van",
+      "voor"
+    ]
+  },
+  {
+    "word": "integraal",
+    "alternatives": [
+      "volledig",
+      "helemaal"
+    ]
+  },
+  {
+    "word": "interactie",
+    "alternatives": [
+      "omgang",
+      "samenwerking"
+    ]
+  },
+  {
+    "word": "kennisnemen van",
+    "alternatives": [
+      "lezen",
+      "bekijken"
+    ]
+  },
+  {
+    "word": "legitiem",
+    "alternatives": [
+      "terecht",
+      "wettig"
+    ]
+  },
+  {
+    "word": "met betrekking tot",
+    "alternatives": [
+      "over",
+      "wat betreft"
+    ]
+  },
+  {
+    "word": "nagenoeg",
+    "alternatives": [
+      "bijna"
+    ]
+  },
+  {
+    "word": "nota bene",
+    "alternatives": [
+      "let op",
+      "bedenk wel"
+    ]
+  },
+  {
+    "word": "niettemin",
+    "alternatives": [
+      "toch",
+      "desondanks"
+    ]
+  },
+  {
+    "word": "oogmerk",
+    "alternatives": [
+      "doel",
+      "bedoeling"
+    ]
+  },
+  {
+    "word": "opdat",
+    "alternatives": [
+      "zodat"
+    ]
+  },
+  {
+    "word": "paraferen",
+    "alternatives": [
+      "ondertekenen (kort)"
+    ]
+  },
+  {
+    "word": "per saldo",
+    "alternatives": [
+      "uiteindelijk",
+      "alles bij elkaar"
+    ]
+  },
+  {
+    "word": "plausibel",
+    "alternatives": [
+      "geloofwaardig",
+      "aannemelijk"
+    ]
+  },
+  {
+    "word": "prioriteit",
+    "alternatives": [
+      "voorrang"
+    ]
+  },
+  {
+    "word": "pro memorie",
+    "alternatives": [
+      "ter herinnering",
+      "om niet te vergeten"
+    ]
+  },
+  {
+    "word": "recentelijk",
+    "alternatives": [
+      "kort geleden",
+      "pas"
+    ]
+  },
+  {
+    "word": "reëel",
+    "alternatives": [
+      "echt",
+      "werkelijk"
+    ]
+  },
+  {
+    "word": "stipuleren",
+    "alternatives": [
+      "eisen",
+      "bepalen"
+    ]
+  },
+  {
+    "word": "substantieel",
+    "alternatives": [
+      "aanzienlijk",
+      "veel"
+    ]
+  },
+  {
+    "word": "ter voorkoming van",
+    "alternatives": [
+      "om te voorkomen dat"
+    ]
+  },
+  {
+    "word": "uiteraard",
+    "alternatives": [
+      "natuurlijk"
+    ]
+  },
+  {
+    "word": "uitzonderlijke",
+    "alternatives": [
+      "speciale",
+      "bijzondere"
+    ]
+  },
+  {
+    "word": "uiterlijk",
+    "alternatives": [
+      "ten laatste"
+    ]
+  },
+  {
+    "word": "valideren",
+    "alternatives": [
+      "goedkeuren",
+      "bevestigen"
+    ]
+  },
+  {
+    "word": "vermeende",
+    "alternatives": [
+      "zogenaamde",
+      "veronderstelde"
+    ]
+  },
+  {
+    "word": "vooraf",
+    "alternatives": [
+      "van tevoren"
+    ]
+  },
+  {
+    "word": "vooropstellen",
+    "alternatives": [
+      "belangrijk vinden",
+      "beginnen met"
+    ]
+  },
+  {
+    "word": "voortdurend",
+    "alternatives": [
+      "constant",
+      "steeds"
+    ]
+  },
+  {
+    "word": "zich ontplooien",
+    "alternatives": [
+      "zich ontwikkelen"
+    ]
+  },
+  {
+    "word": "zich onthouden van",
+    "alternatives": [
+      "niet meedoen aan",
+      "wegblijven van"
+    ]
+  },
+  {
+    "word": "zich voegen naar",
+    "alternatives": [
+      "zich aanpassen aan"
+    ]
+  },
+  {
+    "word": "zodanig",
+    "alternatives": [
+      "op zo'n manier"
+    ]
+  },
+  {
+    "word": "zowel... als",
+    "alternatives": [
+      "en... ook"
+    ]
+  }
+]

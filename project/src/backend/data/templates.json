@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "name": "Aanmaning (Formeel)",
+    "content": "Geachte heer/mevrouw,\n\nUit onze administratie is gebleken dat u de factuur met kenmerk 2023-001 nog niet heeft voldaan. De betalingstermijn is inmiddels verstreken. Wij verzoeken u vriendelijk doch dringend het openstaande bedrag van € 150,- binnen 14 dagen over te maken op ons rekeningnummer.\n\nIndien u reeds betaald heeft, kunt u deze brief als niet verzonden beschouwen. U bent verplicht dit te doen.\n\nMet vriendelijke groet,\n\nGemeente Oostzaan"
+  },
+  {
+    "id": 2,
+    "name": "Uitnodiging Bijeenkomst",
+    "content": "Beste inwoner,\n\nGraag nodigen wij u uit voor een informatiebijeenkomst betreffende de nieuwe plannen voor het centrum. Deze bijeenkomst zal plaatsvinden op 15 januari 2025 in het gemeentehuis.\n\nAangezien uw mening voor ons van groot belang is, hopen wij op uw aanwezigheid. Het College zal de bevindingen meenemen.\n\nMet vriendelijke groet,\n\nGemeente Oostzaan"
+  },
+  {
+    "id": 3,
+    "name": "Beschikking (Voorbeeld)",
+    "content": "Geachte heer Jansen,\n\nNaar aanleiding van uw aanvraag delen wij u mede dat de vergunning is verleend conform de geldende regelgeving. U dient echter wel rekening te houden met de voorwaarden zoals vermeld in de bijlage. De totale kosten zullen €10.000 bedragen.\n\nTegen dit besluit kunt u binnen zes weken bezwaar maken. Dit wordt schriftelijk bevestigd.\n\nHoogachtend,\n\nHet College van B&W"
+  },
+  {
+    "id": 4,
+    "name": "Testbrief Schrijfwijzer (Hoge Foutscore)",
+    "content": "Geachte heer/mevrouw de Vries,\n\ni.o.d. het college van B&W berichten wij u over uw aanvraag, ingediend n.a.v. de mededeling van 15-01-2025. Wij zullen uw aanvraag schriftelijk en binnen zes weken behandelen. U bent verplicht om de bijhorende kosten van €10.50 te voldoen. Het uiteindelijke toegezonden bedrag zal €1,000,- zijn.\n\nDe procedure moet dienen om de schorsende werking te voorkomen; deze informatie wordt vertrouwelijk behandeld. U kunt hiervoor bellen naar 0612345678 of mailen via het intranet naar piet@gemeente.nl.\n\n* Denk eraan: u dient uiterlijk a.s. vrijdag vóór 09:00 uur aan te leveren.\n* De 1e stap is het indienen van een bezwaarschrift.\n* De uiterlijke deadline is 17:00 uur.\n\nMet vr. groet,\nHet college van B&W"
+  },
+  {
+    "id": 5,
+    "name": "Nieuwe Testcase (Meervoudige Fouten)",
+    "content": "Beste jij,\n\nDe directie heeft besloten dat alle nieuwe data door jullie zullen worden ge-e-maild. Hierdoor moet jij nu de nieuwe deadline m.b.t. de vergoeding overmaken. Een kopie van het nieuwe protocol wordt u toegezonden.\n\nMet vriendelijke groet,\n\nDirectie"
+  }
+]

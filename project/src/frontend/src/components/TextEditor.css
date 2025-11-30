@@ -1,15 +1,17 @@
 .text-editor-container {
-  border: 3px solid #000000;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: white;
+    border: 3px solid #000; /* Thick border */
+    border-radius: 0; /* No rounded corners */
+    box-shadow: none; /* No shadow */
+    position: relative; /* For label positioning */
 }
 
 /* Label for the editor box */
 .text-editor-container::before {
-  content: "TEXT EDITOR";
+  content: "TEKST EDITOR";
   position: absolute;
   top: -12px;
   left: 10px;
@@ -19,6 +21,7 @@
   border: 1px solid #000;
   text-transform: uppercase;
   z-index: 10;
+  font-weight: bold;
 }
 
 .editor-toolbar {
@@ -28,18 +31,21 @@
   padding: 0.5rem;
   border-bottom: 2px solid #000;
   flex-wrap: wrap;
+  background: #fff;
 }
 
 .editor-toolbar button {
   background: transparent;
   border: 1px solid #000;
   border-radius: 0; /* Square buttons */
-  padding: 0.25rem;
+  padding: 0.25rem 0.5rem;
   color: #000;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
 }
 
 .editor-toolbar button:hover {
@@ -56,41 +62,70 @@
   cursor: not-allowed;
 }
 
-.editor-toolbar .divider {
-  width: 1px;
-  height: 1.5rem;
-  background: #000;
-  margin: 0 0.25rem;
+.editor-wrapper {
+    position: relative;
+    flex: 1;
+    overflow: hidden; /* Container hides overflow, inner elements scroll if needed */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.editor-backdrop {
+    display: none;
 }
 
 .editor-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 2rem;
-  cursor: text;
-  font-family: 'Courier New', Courier, monospace;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-y: auto;
+    margin: 0;
+    border: none;
+    z-index: 2;
+    color: #000; /* Visible text */
+    background: transparent;
+    outline: none;
+    resize: none;
 }
 
-/* Tiptap Editor Styles */
-.ProseMirror {
-  outline: none;
-  height: 100%;
-  font-size: 1.1rem;
+.highlight-complex {
+    background-color: #e6e6e6; /* Light gray highlight */
+    border: 2px solid #000; /* Box around word */
+    padding: 0 2px;
 }
 
-.ProseMirror > * + * {
-  margin-top: 1em;
+.editor-footer {
+    padding: 8px 16px;
+    background: #fff;
+    border-top: 2px solid #000;
+    font-size: 0.8rem;
+    color: #000;
+    text-align: left;
+    font-family: 'Courier New', Courier, monospace;
 }
 
-/* Highlighted/Complex words style */
-.complex-word {
-  border: 2px solid #000;
-  padding: 0 2px;
-  font-weight: bold;
-  background: transparent;
+.status-text {
+    font-size: 0.85rem;
+    color: #000;
+    font-weight: bold;
+    margin-left: auto;
 }
 
-.complex-word.selected {
-  background: #000;
-  color: #fff;
+.highlight-violation {
+    background-color: #ffcccc; /* Light red */
+    border: 2px dashed #ff0000; /* Dashed red border */
+    padding: 0 2px;
+    cursor: pointer;
+}
+
+.footer-separator {
+    margin: 0 8px;
+    color: #ccc;
 }
