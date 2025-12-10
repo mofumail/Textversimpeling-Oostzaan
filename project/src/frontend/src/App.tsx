@@ -53,6 +53,7 @@ function App() {
     const template = templates.find(t => t.id === templateId)
     if (template) {
       setEditorContent(template.content)
+      handleEditorUpdate(template.content)
     }
   }
 

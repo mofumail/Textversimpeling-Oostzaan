@@ -193,13 +193,19 @@ const TextEditor: React.FC<TextEditorProps> = ({ onUpdate, analysisResult, onWor
     editorRef.current.innerHTML = html;
   }
 
-  const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
-    isUserInput.current = true
-    const text = e.currentTarget.innerText
-    setContent(text)
-    onUpdate(text)
-  }
+  // const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
+  //   isUserInput.current = true
+  //   const text = e.currentTarget.innerText
+  //   setContent(text)
+  //   onUpdate(text)
+  // }
 
+  const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
+  isUserInput.current = true
+  const text = e.currentTarget.innerText
+  setContent(text)
+  onUpdate(text)
+}
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!analysisResult) return;
     
