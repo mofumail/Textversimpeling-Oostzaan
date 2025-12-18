@@ -1,0 +1,113 @@
+.app-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Courier New', Courier, monospace; /* Wireframe font */
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid #000; /* Thicker border */
+}
+
+.logo-box {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.header-content h1 {
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: normal;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.header-content p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.header-controls {
+  margin-left: auto;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.template-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.template-selector label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+  background: #fff;
+  padding: 0 0.2rem;
+  position: relative;
+  top: 8px;
+  left: 10px;
+  z-index: 1;
+  border: 1px solid #000; /* Added border to label */
+}
+
+.template-selector select {
+  padding: 0.5rem 1rem;
+  border: 2px solid #000;
+  background: #fff;
+  font-family: inherit;
+  min-width: 200px;
+  cursor: pointer;
+  box-shadow: none; /* No shadow */
+  border-radius: 0; /* No rounded corners */
+}
+
+.rewrite-btn {
+  padding: 0.5rem 1rem;
+  border: 2px solid #000;
+  background: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: bold;
+  box-shadow: 2px 2px 0 #000; /* Simple offset shadow for button */
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.rewrite-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.app-main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.editor-column, .sidebar-column {
+  height: 100%;
+  min-height: 0;
+}
