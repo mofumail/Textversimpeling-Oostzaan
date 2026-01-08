@@ -20,10 +20,12 @@ interface SuggestionListProps {
     suggestions: Suggestion[];
     onApply: (suggestion: Suggestion, replacement: string) => void;
     onDismiss: (id: string) => void;
+    onIgnore: (word: string) => void;
 }
 
-export const SuggestionList: React.FC<SuggestionListProps> = ({ suggestions, onApply, onDismiss }) => {
+export const SuggestionList: React.FC<SuggestionListProps> = ({ suggestions, onApply, onDismiss, onIgnore }) => {
     const styles = useStyles();
+    const [expandedId, setExpandedId] = React.useState<string | null>(null);
 
     if (suggestions.length === 0) {
         return (
@@ -35,14 +37,55 @@ export const SuggestionList: React.FC<SuggestionListProps> = ({ suggestions, onA
 
     return (
         <div className={styles.list}>
-            {suggestions.map((suggestion) => (
-                <SuggestionCard
-                    key={suggestion.id}
-                    suggestion={suggestion}
-                    onApply={onApply}
-                    onDismiss={onDismiss}
-                />
-            ))}
+            {suggestions.map((suggestion) => {
+                const isExpanded = expandedId === suggestion.id;
+                return (
+                    <div key={suggestion.id} style={{ marginBottom: '8px' }}>
+                        {!isExpanded ? (
+                            <div
+                                onClick={() => setExpandedId(suggestion.id)}
+                                style={{
+                                    padding: '12px',
+                                    backgroundColor: 'white',
+                                    border: '1px solid #e0e0e0',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <span style={{ fontWeight: 600, color: '#d13438' }}>{suggestion.originalText}</span>
+                                <span style={{ fontSize: '12px', color: '#666' }}>Click to view</span>
+                            </div>
+                        ) : (
+                            <div style={{ position: 'relative' }}>
+                                <div
+                                    onClick={() => setExpandedId(null)}
+                                    style={{
+                                        position: 'absolute',
+                                        top: '0',
+                                        right: '0',
+                                        padding: '4px 8px',
+                                        cursor: 'pointer',
+                                        zIndex: 1,
+                                        fontSize: '10px',
+                                        color: '#666'
+                                    }}
+                                >
+                                    Collapse
+                                </div>
+                                <SuggestionCard
+                                    suggestion={suggestion}
+                                    onApply={onApply}
+                                    onDismiss={onDismiss}
+                                    onIgnore={onIgnore}
+                                />
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
         </div>
     );
 };

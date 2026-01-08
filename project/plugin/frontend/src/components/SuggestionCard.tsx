@@ -37,9 +37,10 @@ interface SuggestionCardProps {
     suggestion: Suggestion;
     onApply: (suggestion: Suggestion, replacement: string) => void;
     onDismiss: (id: string) => void;
+    onIgnore: (word: string) => void;
 }
 
-export const SuggestionCard: React.FC<SuggestionCardProps> = ({ suggestion, onApply, onDismiss }) => {
+export const SuggestionCard: React.FC<SuggestionCardProps> = ({ suggestion, onApply, onDismiss, onIgnore }) => {
     const styles = useStyles();
 
     return (
@@ -53,26 +54,39 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({ suggestion, onAp
                 {suggestion.explanation}
             </Body1>
 
-            <CardFooter className={styles.actions}>
-                <Button
-                    appearance="secondary"
-                    icon={<Dismiss24Regular />}
-                    onClick={() => onDismiss(suggestion.id)}
-                    aria-label="Reject suggestion"
-                >
-                    Reject
-                </Button>
-                {suggestion.replacements.map((replacement) => (
+            <CardFooter className={styles.actions} style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginBottom: '8px' }}>
                     <Button
-                        key={replacement}
-                        appearance="primary"
-                        icon={<Checkmark24Regular />}
-                        onClick={() => onApply(suggestion, replacement)}
-                        aria-label={`Accept replacement: ${replacement}`}
+                        appearance="subtle"
+                        onClick={() => onIgnore(suggestion.originalText)}
+                        size="small"
+                        aria-label="Ignore this word"
                     >
-                        Apply "{replacement}"
+                        Ignore Word
                     </Button>
-                ))}
+                    <Button
+                        appearance="secondary"
+                        icon={<Dismiss24Regular />}
+                        onClick={() => onDismiss(suggestion.id)}
+                        aria-label="Reject suggestion"
+                    >
+                        Skip
+                    </Button>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {suggestion.replacements.map((replacement) => (
+                        <Button
+                            key={replacement}
+                            appearance="primary"
+                            icon={<Checkmark24Regular />}
+                            onClick={() => onApply(suggestion, replacement)}
+                            aria-label={`Replace with: ${replacement}`}
+                            style={{ justifyContent: 'flex-start' }}
+                        >
+                            Change to "{replacement}"
+                        </Button>
+                    ))}
+                </div>
             </CardFooter>
         </Card>
     );

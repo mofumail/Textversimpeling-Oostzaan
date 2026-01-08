@@ -23,15 +23,16 @@ const useStyles = makeStyles({
         height: "100vh",
         backgroundColor: "#faf9f8",
     },
+    // Principle: Hierarchy & Spacing - Using consistent spacing (20px, 24px) to let content breathe.
     header: {
-        ...shorthands.padding("20px", "24px"),
+        ...shorthands.padding("20px", "24px"), // Increased from 16px to 20px/24px for better touch targets and visual comfort.
         backgroundColor: "white",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.05)", // Principle: Elevation - Subtle shadow to separate header from content.
         display: "flex",
         flexDirection: "column",
-        gap: "16px",
-        borderBottom: "1px solid #f0f0f0",
-        position: "sticky",
+        gap: "16px", // Increased gap for better separation of title and controls.
+        borderBottom: "1px solid #f0f0f0", // Subtle divider.
+        position: "sticky", // Principle: Usability - Keep controls accessible.
         top: 0,
         zIndex: 100,
     },
@@ -44,14 +45,14 @@ const useStyles = makeStyles({
     content: {
         flexGrow: 1,
         overflowY: "auto",
-        ...shorthands.padding("16px", "24px"),
-        backgroundColor: "#faf9f8",
+        ...shorthands.padding("16px", "24px"), // consistent horizontal padding with header.
+        backgroundColor: "#faf9f8", // Fluent UI Neutral Background
     },
     controls: {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        gap: "12px",
+        gap: "12px", // Consistent gap.
     },
 });
 
@@ -60,6 +61,7 @@ export const App: React.FC = () => {
     const [suggestions, setSuggestions] = React.useState<Suggestion[]>([]);
     const [loading, setLoading] = React.useState(false);
     const [liveMode, setLiveMode] = React.useState(false);
+    const [ignoredWords, setIgnoredWords] = React.useState<string[]>([]); // Segment 3: Ignore State
     // Debug state
     const [debugLog, setDebugLog] = React.useState<string[]>([]);
 
@@ -67,6 +69,11 @@ export const App: React.FC = () => {
         console.log(msg);
         setDebugLog(prev => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev].slice(0, 20)); // Keep last 20
     };
+
+    // Segment 3: Filter suggestions based on ignored words
+    const filteredSuggestions = React.useMemo(() => {
+        return suggestions.filter(s => !ignoredWords.includes(s.originalText));
+    }, [suggestions, ignoredWords]);
 
     // Initial load and Event Handlers
     React.useEffect(() => {
@@ -177,6 +184,11 @@ export const App: React.FC = () => {
         setSuggestions(prev => prev.filter(s => s.id !== id));
     };
 
+    const handleIgnore = (word: string) => {
+        addLog(`Ignoring word: ${word}`);
+        setIgnoredWords(prev => [...prev, word]);
+    };
+
     return (
         <FluentProvider theme={lightTheme}>
             <div className={styles.container}>
@@ -220,9 +232,10 @@ export const App: React.FC = () => {
                         <Spinner label="Checking your text..." size="large" />
                     ) : (
                         <SuggestionList
-                            suggestions={suggestions}
+                            suggestions={filteredSuggestions}
                             onApply={handleApply}
                             onDismiss={handleDismiss}
+                            onIgnore={handleIgnore}
                         />
                     )}
                 </div>
