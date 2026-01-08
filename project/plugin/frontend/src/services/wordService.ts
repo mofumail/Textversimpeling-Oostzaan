@@ -69,10 +69,11 @@ export const highlightIssues = async (textsToHighlight: string[]) => {
             await context.sync();
 
             searchResults.items.forEach((range: Word.Range) => {
-                // Native grammar check style
-                // @ts-ignore - Avoiding type issues with Enums in older definitions
-                range.font.underline = "Wavy";
-                range.font.color = "Blue";
+                // 'Wavy' only supports Blue/Red on Mac.
+                // Using 'Double' underline for a visible "Gold" warning.
+                range.font.underline = "Double";
+                range.font.color = "#FFA500";
+                console.log("[wordService] Set highlight to Orange (Double)");
             });
         }
         await context.sync();

@@ -31,12 +31,15 @@ const useStyles = makeStyles({
         flexDirection: "column",
         gap: "16px",
         borderBottom: "1px solid #f0f0f0",
+        position: "sticky",
+        top: 0,
+        zIndex: 100,
     },
     titleRow: {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        marginBottom: "8px",
+        marginBottom: "4px",
     },
     content: {
         flexGrow: 1,

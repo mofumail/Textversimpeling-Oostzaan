@@ -26,8 +26,10 @@ export const analyzeText = async (text: string): Promise<Suggestion[]> => {
 
     // Jargon Detection
     (jargonData as JargonEntry[]).forEach((item) => {
-        // Simple string matching (in a real app, use regex for word boundaries)
-        if (lowerText.includes(item.word.toLowerCase())) {
+        // Use Regex with word boundaries for strict matching
+        // Escape check for special regex characters in the word if necessary, but assuming simple words for now.
+        const regex = new RegExp(`\\b${item.word}\\b`, 'i');
+        if (regex.test(text)) {
             console.log(`[analysisService] Match found: ${item.word}`);
             suggestions.push({
                 id: Math.random().toString(36).substr(2, 9),
