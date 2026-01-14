@@ -206,7 +206,7 @@ export const App: React.FC = () => {
         return Math.max(0, 100 - deduction);
     };
 
-    const handleAnalyze = async (mode: 'document' | 'selection' | 'live' = 'selection', keepView = false) => {
+    const handleAnalyze = async (mode: 'document' | 'selection' | 'live' = 'selection', keepView = false, ignoredWordsOverride?: string[]) => {
         if (loading && mode === 'live') return;
         setLoading(true);
         if (!keepView) setView('dashboard'); // Reset to dashboard only if not keeping view
@@ -228,9 +228,10 @@ export const App: React.FC = () => {
 
             const results = await analyzeText(text);
 
-            // Filter out ignored words immediately for display AND highlighting
+            // Filter out ignored words use override if provided
+            const currentIgnored = ignoredWordsOverride ?? ignoredWords;
             const validSuggestions = results.filter(s => {
-                if (ignoredWords.includes(s.originalText)) return false;
+                if (currentIgnored.includes(s.originalText)) return false;
                 const key = `${s.originalText}_${s.occurrenceIndex ?? 0}`;
                 if (dismissedInstances.includes(key)) return false;
                 return true;
@@ -300,8 +301,11 @@ export const App: React.FC = () => {
         }
     };
 
-    const handleUnignore = (word: string) => {
-        setIgnoredWords(prev => prev.filter(w => w !== word));
+    const handleUnignore = async (word: string) => {
+        const newList = ignoredWords.filter(w => w !== word);
+        setIgnoredWords(newList);
+        // Force re-analysis with new list to re-discover the word
+        await handleAnalyze('document', true, newList);
     };
 
     const navigateToDetail = (category: string | null) => {
