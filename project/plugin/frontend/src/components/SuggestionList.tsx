@@ -25,7 +25,16 @@ interface SuggestionListProps {
 
 export const SuggestionList: React.FC<SuggestionListProps> = ({ suggestions, onApply, onDismiss, onIgnore }) => {
     const styles = useStyles();
-    const [expandedId, setExpandedId] = React.useState<string | null>(null);
+    const [expandedId, setExpandedId] = React.useState<string | null>(
+        suggestions.length === 1 ? suggestions[0].id : null
+    );
+
+    // Update expanded state if suggestions change (e.g. navigation)
+    React.useEffect(() => {
+        if (suggestions.length === 1) {
+            setExpandedId(suggestions[0].id);
+        }
+    }, [suggestions]);
 
     if (suggestions.length === 0) {
         return (
