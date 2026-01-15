@@ -20,13 +20,14 @@ import {
     ChevronLeft24Regular,
     ChevronRight24Regular,
     Dismiss24Regular,
-    TargetArrow24Regular
+    TargetArrow24Regular,
+    Power24Regular
 } from "@fluentui/react-icons";
 import { lightTheme } from "../theme";
 import { SuggestionList } from "./SuggestionList";
 import { analyzeText } from "../services/analysisService";
 import type { Suggestion } from "../services/analysisService";
-import { getSelectedText, getDocumentText, getCurrentParagraphText, replaceText, highlightSpecificIssues, selectText, removeHighlight, clearSelectionHighlight, clearAllHighlights } from "../services/wordService";
+import { getSelectedText, getDocumentText, replaceText, highlightSpecificIssues, selectText, removeHighlight, clearSelectionHighlight, clearAllHighlights } from "../services/wordService";
 
 const useStyles = makeStyles({
     container: {
@@ -163,6 +164,22 @@ export const App: React.FC = () => {
         return filteredSuggestions.filter(s => s.issueCategory === selectedCategory);
     }, [filteredSuggestions, selectedCategory]);
 
+    const liveModeRef = React.useRef(liveMode);
+    const ignoredWordsRef = React.useRef(ignoredWords);
+    const dismissedInstancesRef = React.useRef(dismissedInstances);
+
+    React.useEffect(() => {
+        liveModeRef.current = liveMode;
+    }, [liveMode]);
+
+    React.useEffect(() => {
+        ignoredWordsRef.current = ignoredWords;
+    }, [ignoredWords]);
+
+    React.useEffect(() => {
+        dismissedInstancesRef.current = dismissedInstances;
+    }, [dismissedInstances]);
+
     React.useEffect(() => {
         addLog(`App mounted. Live: ${liveMode}`);
         const registerEventHandler = async () => {
@@ -182,7 +199,10 @@ export const App: React.FC = () => {
 
         if (typeof Office !== 'undefined') {
             Office.onReady(() => {
-                if (liveMode) registerEventHandler();
+                if (liveMode) {
+                    registerEventHandler();
+                    handleAnalyze('live');
+                }
                 else removeEventHandler();
             });
         }
@@ -217,9 +237,12 @@ export const App: React.FC = () => {
             } else {
                 text = await getSelectedText();
                 if ((!text || text.trim().length === 0) && mode === 'live') {
-                    text = await getCurrentParagraphText();
+                    text = await getDocumentText();
                 }
             }
+
+            // Check if cancelled
+            if (mode === 'live' && !liveModeRef.current) return;
 
             if (!text || text.trim().length === 0) {
                 setLoading(false);
@@ -228,12 +251,15 @@ export const App: React.FC = () => {
 
             const results = await analyzeText(text);
 
+            // Double check cancellation
+            if (mode === 'live' && !liveModeRef.current) return;
+
             // Filter out ignored words use override if provided
-            const currentIgnored = ignoredWordsOverride ?? ignoredWords;
+            const currentIgnored = ignoredWordsOverride ?? ignoredWordsRef.current;
             const validSuggestions = results.filter(s => {
                 if (currentIgnored.includes(s.originalText)) return false;
                 const key = `${s.originalText}_${s.occurrenceIndex ?? 0}`;
-                if (dismissedInstances.includes(key)) return false;
+                if (dismissedInstancesRef.current.includes(key)) return false;
                 return true;
             });
 
@@ -250,6 +276,9 @@ export const App: React.FC = () => {
         } catch (error) {
             addLog(`Error: ${error}`);
         } finally {
+            // Only set loading false if we are not in live mode or if we are still in live mode
+            // If we are in live mode but liveModeRef is false, it means we cancelled.
+            // But we can safely set loading false as long as we didn't touch other state.
             setLoading(false);
         }
     };
@@ -308,6 +337,25 @@ export const App: React.FC = () => {
         await handleAnalyze('document', true, newList);
     };
 
+    const clearState = async () => {
+        setSuggestions([]);
+        setScore(null);
+        await clearAllHighlights();
+    };
+
+    const handleDisable = async () => {
+        setLiveMode(false);
+        await clearState();
+        setView('dashboard');
+    };
+
+    const handleLiveModeChange = async (checked: boolean) => {
+        setLiveMode(checked);
+        if (!checked) {
+            await clearState();
+        }
+    };
+
     const navigateToDetail = (category: string | null) => {
         setSelectedCategory(category);
         setCurrentIndex(0); // Reset index
@@ -334,6 +382,13 @@ export const App: React.FC = () => {
                         <Title2>Dutch Municipal Writer</Title2>
                         <Button
                             appearance="subtle"
+                            icon={<Power24Regular />}
+                            onClick={handleDisable}
+                            aria-label="Disable Add-in"
+                            title="Disable Add-in"
+                        />
+                        <Button
+                            appearance="subtle"
                             icon={<TextGrammarSettings24Regular />}
                             onClick={() => setView('settings')}
                             aria-label="Settings"
@@ -354,7 +409,7 @@ export const App: React.FC = () => {
                         <Switch
                             label="Live Feedback"
                             checked={liveMode}
-                            onChange={(_, data) => setLiveMode(data.checked)}
+                            onChange={(_, data) => handleLiveModeChange(data.checked)}
                         />
                         {loading && <Spinner size="tiny" />}
                     </div>
