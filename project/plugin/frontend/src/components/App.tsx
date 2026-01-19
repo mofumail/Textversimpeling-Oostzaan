@@ -10,7 +10,8 @@ import {
     shorthands,
     Switch,
     ProgressBar,
-    Body1
+    Body1,
+    Link
 } from "@fluentui/react-components";
 import {
     TextGrammarSettings24Regular,
@@ -21,7 +22,8 @@ import {
     ChevronRight24Regular,
     Dismiss24Regular,
     TargetArrow24Regular,
-    Power24Regular
+    Power24Regular,
+    Wand24Regular
 } from "@fluentui/react-icons";
 import { lightTheme } from "../theme";
 import { SuggestionList } from "./SuggestionList";
@@ -109,10 +111,21 @@ const useStyles = makeStyles({
     navButton: {
         minWidth: "auto",
         padding: "8px"
+    },
+    explanationBox: {
+        backgroundColor: "#edf5fd",
+        ...shorthands.padding("12px"),
+        borderRadius: "4px",
+        marginBottom: "20px",
+        borderLeft: "4px solid #0078d4",
+        display: "flex", // Keep it flow
+        gap: "12px",
+        alignItems: "start"
     }
 });
 
 import { SettingsView } from "./SettingsView";
+import { SimplifyView } from "./SimplifyView";
 
 export const App: React.FC = () => {
     const styles = useStyles();
@@ -122,8 +135,11 @@ export const App: React.FC = () => {
     const [ignoredWords, setIgnoredWords] = React.useState<string[]>([]);
     const [dismissedInstances, setDismissedInstances] = React.useState<string[]>([]); // Key: "word_occurrenceIndex"
 
-    // New State for Dashboard/Score/Settings
-    const [view, setView] = React.useState<'dashboard' | 'detail' | 'settings'>('dashboard');
+    // Simplify Mode State
+    const [selectedSentences, setSelectedSentences] = React.useState<string[]>([]);
+
+    // New State for Dashboard/Score/Settings/Simplify
+    const [view, setView] = React.useState<'dashboard' | 'detail' | 'settings' | 'simplify'>('dashboard');
     const [score, setScore] = React.useState<number | null>(null);
     const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null);
 
@@ -283,6 +299,21 @@ export const App: React.FC = () => {
         }
     };
 
+    const handleAddSentence = async () => {
+        try {
+            const text = await getSelectedText();
+            if (text && text.trim().length > 0) {
+                setSelectedSentences(prev => [...prev, text.trim()]);
+            }
+        } catch (error) {
+            addLog(`Error adding sentence: ${error}`);
+        }
+    };
+
+    const handleDeleteSentence = (index: number) => {
+        setSelectedSentences(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleApply = async (suggestion: Suggestion, replacement: string) => {
         try {
             await replaceText(suggestion.originalText, replacement, suggestion.occurrenceIndex ?? 0);
@@ -386,6 +417,13 @@ export const App: React.FC = () => {
                             onClick={handleDisable}
                             aria-label="Disable Add-in"
                             title="Disable Add-in"
+                        />
+                        <Button
+                            appearance="subtle"
+                            icon={<Wand24Regular />}
+                            onClick={() => setView('simplify')}
+                            aria-label="Simplify"
+                            title="Simplify Sentences"
                         />
                         <Button
                             appearance="subtle"
@@ -531,6 +569,15 @@ export const App: React.FC = () => {
                                     ignoredWords={ignoredWords}
                                     onUnignore={handleUnignore}
                                     onBack={() => setView('dashboard')}
+                                />
+                            )}
+
+                            {view === 'simplify' && (
+                                <SimplifyView
+                                    onBack={() => setView('dashboard')}
+                                    selectedSentences={selectedSentences}
+                                    onAddSentence={handleAddSentence}
+                                    onRemoveSentence={handleDeleteSentence}
                                 />
                             )}
                         </>
