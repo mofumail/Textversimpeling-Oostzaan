@@ -10,8 +10,7 @@ import {
     shorthands,
     Switch,
     ProgressBar,
-    Body1,
-    Link
+    Body1
 } from "@fluentui/react-components";
 import {
     TextGrammarSettings24Regular,
@@ -30,6 +29,7 @@ import { SuggestionList } from "./SuggestionList";
 import { analyzeText } from "../services/analysisService";
 import type { Suggestion } from "../services/analysisService";
 import { getSelectedText, getDocumentText, replaceText, highlightSpecificIssues, selectText, removeHighlight, clearSelectionHighlight, clearAllHighlights } from "../services/wordService";
+import * as wordService from "../services/wordService"; // Import all for easier usage if preferred
 
 const useStyles = makeStyles({
     container: {
@@ -136,10 +136,31 @@ export const App: React.FC = () => {
     const [dismissedInstances, setDismissedInstances] = React.useState<string[]>([]); // Key: "word_occurrenceIndex"
 
     // Simplify Mode State
-    const [selectedSentences, setSelectedSentences] = React.useState<string[]>([]);
+    // Stores objects with ID (tag) and text
+    const [selectedSentences, setSelectedSentences] = React.useState<{ tag: string, text: string }[]>([]);
 
     // New State for Dashboard/Score/Settings/Simplify
     const [view, setView] = React.useState<'dashboard' | 'detail' | 'settings' | 'simplify'>('dashboard');
+
+    const [disabledRules, setDisabledRules] = React.useState<string[]>([]);
+
+    // Sync sentences when entering Simplify view
+    React.useEffect(() => {
+        if (view === 'simplify' && selectedSentences.length > 0) {
+            const sync = async () => {
+                const tags = selectedSentences.map(s => s.tag);
+                try {
+                    const existingTags = await wordService.getExistingTrackingTags(tags);
+                    if (existingTags.length !== selectedSentences.length) {
+                        setSelectedSentences(prev => prev.filter(s => existingTags.includes(s.tag)));
+                    }
+                } catch (e) {
+                    console.error("Failed to sync sentences", e);
+                }
+            };
+            sync();
+        }
+    }, [view]);
     const [score, setScore] = React.useState<number | null>(null);
     const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null);
 
@@ -158,12 +179,14 @@ export const App: React.FC = () => {
         return suggestions.filter(s => {
             // Check global ignore
             if (ignoredWords.includes(s.originalText)) return false;
+            // Check disabled rules
+            if (s.ruleId && disabledRules.includes(s.ruleId)) return false;
             // Check specific instance ignore
             const key = `${s.originalText}_${s.occurrenceIndex ?? 0}`;
             if (dismissedInstances.includes(key)) return false;
             return true;
         });
-    }, [suggestions, ignoredWords, dismissedInstances]);
+    }, [suggestions, ignoredWords, dismissedInstances, disabledRules]);
 
     // Derived stats
     const stats = React.useMemo(() => {
@@ -198,13 +221,34 @@ export const App: React.FC = () => {
 
     React.useEffect(() => {
         addLog(`App mounted. Live: ${liveMode}`);
-        const registerEventHandler = async () => {
+        const handleSelectionChange = async () => {
             if (liveMode) {
-                await Office.context.document.addHandlerAsync(
-                    Office.EventType.DocumentSelectionChanged,
-                    () => handleAnalyze('live')
-                );
+                await handleAnalyze('live');
             }
+            if (view === 'simplify') {
+                // Auto-sync sentences if document changed
+                // This might be too aggressive if merely selection changed, 
+                // but checking for deleted controls requires reading the doc.
+                // To avoid perf issues, maybe we only sync if we have sentences?
+                if (selectedSentences.length > 0) {
+                    const tags = selectedSentences.map(s => s.tag);
+                    try {
+                        const existingTags = await wordService.getExistingTrackingTags(tags);
+                        if (existingTags.length !== selectedSentences.length) {
+                            setSelectedSentences(prev => prev.filter(s => existingTags.includes(s.tag)));
+                        }
+                    } catch (e) {
+                        // ignore
+                    }
+                }
+            }
+        };
+
+        const registerEventHandler = async () => {
+            await Office.context.document.addHandlerAsync(
+                Office.EventType.DocumentSelectionChanged,
+                handleSelectionChange
+            );
         };
 
         const removeEventHandler = async () => {
@@ -215,15 +259,24 @@ export const App: React.FC = () => {
 
         if (typeof Office !== 'undefined') {
             Office.onReady(() => {
-                if (liveMode) {
+                // Always register if live or simplify? 
+                // Actually, we should just register once and handle logic inside.
+                // But we need to manage lifecycle.
+                // Let's Register if live OR simplify
+                if (liveMode || view === 'simplify') {
                     registerEventHandler();
-                    handleAnalyze('live');
+                    if (liveMode) handleAnalyze('live');
+                } else {
+                    removeEventHandler();
                 }
-                else removeEventHandler();
             });
         }
         return () => { if (typeof Office !== 'undefined') removeEventHandler(); };
-    }, [liveMode]);
+    }, [liveMode, view, selectedSentences]); // Add view and selectedSentences to dep array?
+    // WARNING: adding selectedSentences to dep array will cause re-registration on every sync.
+    // Better to use a ref for selectedSentences or use functional updates.
+    // But handleSelectionChange closes over state.
+    // Let's use Ref for selectedSentences to avoid re-registration loop.
 
     // Auto-select text when current index changes in Detail view
     React.useEffect(() => {
@@ -301,17 +354,38 @@ export const App: React.FC = () => {
 
     const handleAddSentence = async () => {
         try {
-            const text = await getSelectedText();
-            if (text && text.trim().length > 0) {
-                setSelectedSentences(prev => [...prev, text.trim()]);
+            const result = await wordService.addTrackingControl();
+            if (result) {
+                setSelectedSentences(prev => [...prev, result]);
+                // Optionally auto-nav to simplify view?
             }
         } catch (error) {
             addLog(`Error adding sentence: ${error}`);
         }
     };
 
-    const handleDeleteSentence = (index: number) => {
-        setSelectedSentences(prev => prev.filter((_, i) => i !== index));
+    const handleDeleteSentence = async (index: number) => {
+        const item = selectedSentences[index];
+        if (item) {
+            await wordService.removeTrackingControl(item.tag);
+            setSelectedSentences(prev => prev.filter((_, i) => i !== index));
+        }
+    };
+
+    const handleLocateSentence = async (tag: string) => {
+        try {
+            await wordService.selectTrackingControl(tag);
+        } catch (error) {
+            addLog(`Error locating sentence: ${error}`);
+        }
+    };
+
+    const handleApplyRewrite = async (tag: string, newText: string) => {
+        try {
+            await wordService.replaceAndRemoveTrackingControl(tag, newText);
+        } catch (error) {
+            addLog(`Error replacing sentence: ${error}`);
+        }
     };
 
     const handleApply = async (suggestion: Suggestion, replacement: string) => {
@@ -368,6 +442,76 @@ export const App: React.FC = () => {
         await handleAnalyze('document', true, newList);
     };
 
+    const handleDisableRule = async (ruleId: string) => {
+        setDisabledRules(prev => [...prev, ruleId]);
+
+        // 1. Calculate new suggestions state (local update)
+        const currentSuggestions = suggestions;
+        const newSuggestions = currentSuggestions.map(s => {
+            // Check primary rule
+            if (s.ruleId === ruleId) {
+                // If primary matches, try to promote a secondary rule
+                if (s.secondaryRules && s.secondaryRules.length > 0) {
+                    const nextRule = s.secondaryRules[0];
+                    const remainingSecondary = s.secondaryRules.slice(1);
+                    return {
+                        ...s,
+                        ruleId: nextRule.ruleId,
+                        explanation: nextRule.explanation,
+                        secondaryRules: remainingSecondary.length > 0 ? remainingSecondary : undefined
+                    };
+                } else {
+                    // No secondary rules, this suggestion should be removed
+                    return null;
+                }
+            }
+
+            // Check secondary rules
+            if (s.secondaryRules) {
+                const filteredSecondary = s.secondaryRules.filter(r => r.ruleId !== ruleId);
+                if (filteredSecondary.length !== s.secondaryRules.length) {
+                    return {
+                        ...s,
+                        secondaryRules: filteredSecondary.length > 0 ? filteredSecondary : undefined
+                    };
+                }
+            }
+
+            return s;
+        }).filter((s): s is Suggestion => s !== null);
+
+        // 2. Identify texts that are no longer covered by ANY suggestion
+        const remainingTexts = new Set(newSuggestions.map(s => s.originalText));
+
+        const allCurrentTexts = new Set(currentSuggestions.map(s => s.originalText));
+        const textsToUnhighlight: string[] = [];
+
+        allCurrentTexts.forEach(text => {
+            if (!remainingTexts.has(text)) {
+                textsToUnhighlight.push(text);
+            }
+        });
+
+        // 3. Remove highlights
+        if (textsToUnhighlight.length > 0) {
+            await Promise.all(textsToUnhighlight.map(text => removeHighlight(text)));
+        }
+
+        // 4. Update state
+        setSuggestions(newSuggestions);
+
+        if (currentIndex >= activeSuggestions.length - 1) {
+            setCurrentIndex(Math.max(0, activeSuggestions.length - 2));
+        }
+    };
+
+    const handleEnableRule = async (ruleId: string) => {
+        const newList = disabledRules.filter(id => id !== ruleId);
+        setDisabledRules(newList);
+        // Force re-analysis to bring them back
+        await handleAnalyze('document', true);
+    };
+
     const clearState = async () => {
         setSuggestions([]);
         setScore(null);
@@ -411,13 +555,15 @@ export const App: React.FC = () => {
                 <div className={styles.header}>
                     <div className={styles.titleRow}>
                         <Title2>Dutch Municipal Writer</Title2>
-                        <Button
-                            appearance="subtle"
-                            icon={<Power24Regular />}
-                            onClick={handleDisable}
-                            aria-label="Disable Add-in"
-                            title="Disable Add-in"
-                        />
+                        {(liveMode || score !== null) && (
+                            <Button
+                                appearance="subtle"
+                                icon={<Power24Regular />}
+                                onClick={handleDisable}
+                                aria-label="Disable Add-in"
+                                title="Disable Add-in"
+                            />
+                        )}
                         <Button
                             appearance="subtle"
                             icon={<Wand24Regular />}
@@ -487,7 +633,7 @@ export const App: React.FC = () => {
                                                     <Body1>{category}</Body1>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                         <span style={{ fontWeight: 'bold' }}>{count}</span>
-                                                        <ErrorCircle24Regular color="#d13438" />
+                                                        <ErrorCircle24Regular color={category === 'Jargon' ? "#d13438" : "#FFA500"} />
                                                     </div>
                                                 </div>
                                             ))}
@@ -554,6 +700,7 @@ export const App: React.FC = () => {
                                             onApply={handleApply}
                                             onDismiss={handleDismiss} // No collapse
                                             onIgnore={handleIgnore}
+                                            onDisableRule={handleDisableRule}
                                         />
                                     ) : (
                                         <div style={{ textAlign: "center" }}>
@@ -568,6 +715,8 @@ export const App: React.FC = () => {
                                 <SettingsView
                                     ignoredWords={ignoredWords}
                                     onUnignore={handleUnignore}
+                                    disabledRules={disabledRules}
+                                    onEnableRule={handleEnableRule}
                                     onBack={() => setView('dashboard')}
                                 />
                             )}
@@ -578,6 +727,8 @@ export const App: React.FC = () => {
                                     selectedSentences={selectedSentences}
                                     onAddSentence={handleAddSentence}
                                     onRemoveSentence={handleDeleteSentence}
+                                    onLocateSentence={handleLocateSentence}
+                                    onApplyRewrite={handleApplyRewrite}
                                 />
                             )}
                         </>
