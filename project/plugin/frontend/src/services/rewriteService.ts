@@ -24,7 +24,7 @@ export const generateRewrites = async (originalText: string): Promise<string> =>
             }
         ],
         max_tokens: 256,
-        temperature: 0.7
+        temperature: 0.2
     };
 
     console.log("[rewriteService] Request Body:", JSON.stringify(requestBody, null, 2));

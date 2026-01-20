@@ -161,7 +161,11 @@ export const App: React.FC = () => {
             sync();
         }
     }, [view]);
-    const [score, setScore] = React.useState<number | null>(null);
+    // Text length state for score calculation
+    const [textLength, setTextLength] = React.useState<number | null>(null);
+
+
+
     const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null);
 
     // Review Mode State
@@ -223,25 +227,11 @@ export const App: React.FC = () => {
         addLog(`App mounted. Live: ${liveMode}`);
         const handleSelectionChange = async () => {
             if (liveMode) {
-                await handleAnalyze('live');
+                await handleAnalyze('live', true);
             }
-            if (view === 'simplify') {
-                // Auto-sync sentences if document changed
-                // This might be too aggressive if merely selection changed, 
-                // but checking for deleted controls requires reading the doc.
-                // To avoid perf issues, maybe we only sync if we have sentences?
-                if (selectedSentences.length > 0) {
-                    const tags = selectedSentences.map(s => s.tag);
-                    try {
-                        const existingTags = await wordService.getExistingTrackingTags(tags);
-                        if (existingTags.length !== selectedSentences.length) {
-                            setSelectedSentences(prev => prev.filter(s => existingTags.includes(s.tag)));
-                        }
-                    } catch (e) {
-                        // ignore
-                    }
-                }
-            }
+            // Sync logic removed to prevent bug where items disappear from list but stay in doc
+            // due to race conditions or API limitations. 
+            // We now rely on initial mount sync and manual additions/removals.
         };
 
         const registerEventHandler = async () => {
@@ -259,20 +249,93 @@ export const App: React.FC = () => {
 
         if (typeof Office !== 'undefined') {
             Office.onReady(() => {
-                // Always register if live or simplify? 
-                // Actually, we should just register once and handle logic inside.
-                // But we need to manage lifecycle.
-                // Let's Register if live OR simplify
                 if (liveMode || view === 'simplify') {
                     registerEventHandler();
-                    if (liveMode) handleAnalyze('live');
+                    if (liveMode) handleAnalyze('live', true);
                 } else {
                     removeEventHandler();
                 }
             });
         }
-        return () => { if (typeof Office !== 'undefined') removeEventHandler(); };
-    }, [liveMode, view, selectedSentences]); // Add view and selectedSentences to dep array?
+
+        // Cleanup on unmount or when dependencies change affecting this effect
+        return () => {
+            if (typeof Office !== 'undefined') {
+                removeEventHandler();
+                // If the app is actually unmounting (not just re-running effect due to dependency change),
+                // we might want to clear highlights. 
+                // However, React effects run cleanup on dependency change too.
+                // We only want to clear highlights if we are truly "closing" or disabling.
+                // But there's no easy way to distinguish unique unmount from re-render here 
+                // without refs or more complex logic.
+                // Given the user request "When plugin is closed", that usually means the task pane is closed.
+                // When task pane closes, the entire JS context is destroyed.
+                // WE CANNOT run cleanup code when the task pane closes abruptly.
+                // BUT, if the user navigates away or we can catch it, we try.
+                // Actually, Office Add-ins don't support "on close" event reliably.
+                // The best we can do is ensure if they "Disable" via our button, it clears.
+                // But the user said "If the plugin is closed".
+                // We can try to rely on the fact that if this component unmounts, we clear.
+                // But we don't want to clear just because 'liveMode' changed and effect re-runs.
+                // So we'll leave it as is for now?
+                // Wait, if I put clearAllHighlights() here, it will run every time liveMode changes.
+                // That might be annoying if toggling live mode clears everything then immediately re-analyzes.
+                // But wait, "untoggling Live Feedback disables the add-in by clearing highlights" was a previous requirement.
+                // So that's actually desired behavior for liveMode toggle.
+                // But what about 'view' change? If I switch views, I don't want to clear highlights.
+                // This useEffect depends on [liveMode, view, selectedSentences].
+                // If I switch to Settings view, this cleans up!
+                // That's BAD. We shouldn't clear highlights just because we switched views.
+
+                // We should only clear highlights if we are genuinely "disabling" or "Unmounting" the whole app (which implies closing).
+                // But we can't detect "App unmount" separately from "Effect cleanup" easily without an empty dep array effect.
+                // Let's create a SEPARATE effect for true unmount cleanup?
+            }
+        };
+    }, [liveMode, view, selectedSentences]);
+
+    // Separate effect for true unmount cleanup and visibility changes
+    React.useEffect(() => {
+        const handleUnload = () => {
+            // Best effort cleanup on close
+            clearAllHighlights();
+        };
+
+        const handleVisibilityChange = async (args: Office.VisibilityModeChangedMessage) => {
+            if (args.visibilityMode === Office.VisibilityMode.hidden) {
+                await clearAllHighlights();
+            }
+            // Optional: Re-analyze when shown? 
+            // if (args.visibilityMode === Office.VisibilityMode.display) ...
+        };
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('unload', handleUnload);
+            window.addEventListener('pagehide', handleUnload); // Also cover pagehide
+        }
+
+        if (typeof Office !== 'undefined') {
+            Office.onReady(() => {
+                Office.addin.onVisibilityModeChanged(handleVisibilityChange);
+            });
+        }
+
+        return () => {
+            if (typeof window !== 'undefined') {
+                window.removeEventListener('unload', handleUnload);
+                window.removeEventListener('pagehide', handleUnload);
+            }
+            // Note: Office doesn't explicitly have a removeVisibilityModeChanged handler exposed easily 
+            // in all versions, or it follows a different pattern. 
+            // But since this is the root App component, leaking one listener isn't critical 
+            // as the context dies with the app.
+
+            // This runs when the component unmounts (e.g. if the root is removed, which is rare in single page app)
+            // or when the browser/pane navigates away (sometimes).
+            // It's the best effortless attempt we can make.
+            clearAllHighlights();
+        };
+    }, []);
     // WARNING: adding selectedSentences to dep array will cause re-registration on every sync.
     // Better to use a ref for selectedSentences or use functional updates.
     // But handleSelectionChange closes over state.
@@ -286,14 +349,17 @@ export const App: React.FC = () => {
         }
     }, [view, currentIndex, activeSuggestions]);
 
-    const calculateScore = (textLength: number, issueCount: number) => {
-        // Simple heuristic: 1 issue per 100 characters reduces score by 5?
-        // Or just simpler: Base 100, minus 2 per issue.
-        // Let's make it look robust:
-        if (textLength === 0) return 100;
+    const calculateScore = (len: number, issueCount: number) => {
+        if (len === 0) return 100;
         const deduction = issueCount * 5;
         return Math.max(0, 100 - deduction);
     };
+
+    // Calculate score based on current filtered suggestions
+    const score = React.useMemo(() => {
+        if (textLength === null) return null;
+        return calculateScore(textLength, filteredSuggestions.length);
+    }, [textLength, filteredSuggestions.length]);
 
     const handleAnalyze = async (mode: 'document' | 'selection' | 'live' = 'selection', keepView = false, ignoredWordsOverride?: string[]) => {
         if (loading && mode === 'live') return;
@@ -333,8 +399,8 @@ export const App: React.FC = () => {
             });
 
             setSuggestions(validSuggestions);
-            // Score should be based on valid suggestions
-            setScore(calculateScore(text.length, validSuggestions.length));
+            // Score is derived from textLength and suggestions
+            setTextLength(text.length);
 
             if (validSuggestions.length > 0) {
                 await highlightSpecificIssues(validSuggestions);
@@ -514,7 +580,7 @@ export const App: React.FC = () => {
 
     const clearState = async () => {
         setSuggestions([]);
-        setScore(null);
+        setTextLength(null);
         await clearAllHighlights();
     };
 
