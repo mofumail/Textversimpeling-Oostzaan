@@ -21,9 +21,10 @@ interface SuggestionListProps {
     onApply: (suggestion: Suggestion, replacement: string) => void;
     onDismiss: (id: string) => void;
     onIgnore: (word: string) => void;
+    onDisableRule?: (ruleId: string) => void;
 }
 
-export const SuggestionList: React.FC<SuggestionListProps> = ({ suggestions, onApply, onDismiss, onIgnore }) => {
+export const SuggestionList: React.FC<SuggestionListProps> = ({ suggestions, onApply, onDismiss, onIgnore, onDisableRule }) => {
     const styles = useStyles();
     const [expandedId, setExpandedId] = React.useState<string | null>(
         suggestions.length === 1 ? suggestions[0].id : null
@@ -89,6 +90,7 @@ export const SuggestionList: React.FC<SuggestionListProps> = ({ suggestions, onA
                                     onApply={onApply}
                                     onDismiss={onDismiss}
                                     onIgnore={onIgnore}
+                                    onDisableRule={onDisableRule}
                                 />
                             </div>
                         )}

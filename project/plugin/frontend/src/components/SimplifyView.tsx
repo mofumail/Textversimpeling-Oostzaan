@@ -5,9 +5,7 @@ import {
     Body1,
     makeStyles,
     shorthands,
-    Spinner,
-    RadioGroup,
-    Radio
+    Spinner
 } from "@fluentui/react-components";
 import {
     Dismiss24Regular,
@@ -15,9 +13,12 @@ import {
     Delete24Regular,
     Wand24Regular,
     Info24Regular,
-    CheckmarkCircle24Regular
+    CheckmarkCircle24Regular,
+    ChevronLeft24Regular,
+    ChevronRight24Regular,
+    ArrowCounterclockwise24Regular
 } from "@fluentui/react-icons";
-import { replaceText } from "../services/wordService";
+import { generateRewrites } from "../services/rewriteService";
 
 const useStyles = makeStyles({
     container: {
@@ -79,168 +80,266 @@ const useStyles = makeStyles({
         }
     },
     selectedOption: {
-        borderColor: "#0078d4",
+        ...shorthands.borderColor("#0078d4"),
         backgroundColor: "#eff6fc"
     }
 });
 
 interface SimplifyViewProps {
     onBack: () => void;
-    selectedSentences: string[];
+    selectedSentences: { tag: string, text: string }[];
     onAddSentence: () => void;
     onRemoveSentence: (index: number) => void;
-    // We might need to know occurrence index if we want precise replacement, 
-    // but for now relying on text search as per current architecture? 
-    // The previous implementation stored just strings. 
-    // Real implementation should probably store location info. 
-    // Text search is risky if duplicates exist. 
-    // Proceeding with text search for now as per previous impl.
+    onLocateSentence: (tag: string) => void;
+    onApplyRewrite: (tag: string, newText: string) => Promise<void>;
 }
 
 interface RewriteOptions {
-    [index: number]: string[];
+    [tag: string]: string;
 }
 
 export const SimplifyView: React.FC<SimplifyViewProps> = ({
     onBack,
     selectedSentences,
     onAddSentence,
-    onRemoveSentence
+    onRemoveSentence,
+    onLocateSentence,
+    onApplyRewrite
 }) => {
     const styles = useStyles();
     const [rewrites, setRewrites] = React.useState<RewriteOptions>({});
-    const [loadingIndices, setLoadingIndices] = React.useState<number[]>([]);
-    const [selectedOption, setSelectedOption] = React.useState<Record<number, string>>({}); // valid option selected per sentence
-    const [completedIndices, setCompletedIndices] = React.useState<number[]>([]);
+    const [loadingTags, setLoadingTags] = React.useState<string[]>([]);
+    // selectedOption no longer needed for single choice
+    const [error, setError] = React.useState<string | null>(null);
 
-    const handleGenerate = async (index: number) => {
-        if (loadingIndices.includes(index)) return;
-        setLoadingIndices(prev => [...prev, index]);
+    // Detail View State
+    const [viewMode, setViewMode] = React.useState<'list' | 'detail'>('list');
+    const [currentIndex, setCurrentIndex] = React.useState(0);
 
-        // Mock API call
-        setTimeout(() => {
-            const original = selectedSentences[index];
-            const mockOptions = [
-                `Simplified: ${original.substring(0, Math.min(original.length, 20))}... (Option A)`,
-                `Concise: ${original.substring(0, Math.min(original.length, 20))}... (Option B)`,
-                `Professional: ${original.substring(0, Math.min(original.length, 20))}... (Option C)`,
-            ];
-            setRewrites(prev => ({ ...prev, [index]: mockOptions }));
-            setLoadingIndices(prev => prev.filter(i => i !== index));
-        }, 1500);
-    };
+    // Auto-select when entering detail
+    React.useEffect(() => {
+        if (viewMode === 'detail' && selectedSentences[currentIndex]) {
+            onLocateSentence(selectedSentences[currentIndex].tag);
+        }
+    }, [viewMode, currentIndex, selectedSentences]);
 
-    const handleApply = async (index: number) => {
-        const replacement = selectedOption[index];
-        const original = selectedSentences[index];
-        if (!replacement) return;
+    const handleGenerate = async (item: { tag: string, text: string }) => {
+        if (loadingTags.includes(item.tag)) return;
+        setLoadingTags(prev => [...prev, item.tag]);
+        setError(null);
 
         try {
-            // Using 0 as occurrence index is dangerous if multiple same sentences exist.
-            // Ideally we tracked indices. For now, we assume 0 or "Simplify" user flow grabs selection carefully.
-            // But `selectedSentences` is just strings.
-            // Let's try to find it.
-            await replaceText(original, replacement, 0);
+            const suggestion = await generateRewrites(item.text);
+            setRewrites(prev => ({ ...prev, [item.tag]: suggestion }));
+            setLoadingTags(prev => prev.filter(t => t !== item.tag));
+        } catch (error) {
+            console.error("Error generating rewrites:", error);
+            setError(`Failed to generate: ${(error as Error).message}`);
+            setLoadingTags(prev => prev.filter(t => t !== item.tag));
+        }
+    };
 
-            // Mark as done
-            setCompletedIndices(prev => [...prev, index]);
-            // Maybe remove structure?
-            // onRemoveSentence(index); // Optional: Auto remove? User might want to see history.
+    const handleApply = async (tag: string) => {
+        const replacement = rewrites[tag]; // Direct lookup
+        if (!replacement) return;
+        try {
+            await onApplyRewrite(tag, replacement);
+
+            // Auto-delete logic
+            onRemoveSentence(currentIndex);
+            // After removal, check navigation
+            if (selectedSentences.length <= 1) {
+                // Was the last one
+                setViewMode('list');
+            } else if (currentIndex >= selectedSentences.length - 1) {
+                // Was at end, move back
+                setCurrentIndex(currentIndex - 1);
+            }
+            // else stay at current index (which is now the next item)
+
         } catch (error) {
             console.error(error);
+            setError("Failed to apply replacement.");
+        }
+    };
+
+    const navigateToDetail = (index: number) => {
+        setCurrentIndex(index);
+        setViewMode('detail');
+    };
+
+    const nextItem = () => {
+        if (currentIndex < selectedSentences.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
+
+    const prevItem = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
         }
     };
 
     return (
         <div className={styles.container}>
-            <div className={styles.reviewNav}>
-                <button className={styles.backButton} onClick={onBack}>
-                    <Dismiss24Regular />
-                </button>
-                <Title2>Simplify Sentences</Title2>
-                <div style={{ width: '24px' }}></div>
-            </div>
+            {viewMode === 'list' && (
+                <>
+                    <div className={styles.reviewNav}>
+                        <button className={styles.backButton} onClick={onBack}>
+                            <Dismiss24Regular />
+                        </button>
+                        <Title2>Simplify Sentences</Title2>
+                        <div style={{ width: '24px' }}></div>
+                    </div>
 
-            <div className={styles.explanationBox}>
-                <Info24Regular style={{ color: "#0078d4", marginTop: "2px" }} />
-                <Body1>
-                    Select sentences in your document that contain jargon or are difficult to understand. Generate and apply simplified versions below.
-                </Body1>
-            </div>
+                    <div className={styles.explanationBox}>
+                        <Info24Regular style={{ color: "#0078d4", marginTop: "2px" }} />
+                        <Body1>
+                            Select sentences to simplify. They will be tracked even if you edit the document.
+                        </Body1>
+                    </div>
 
-            <div style={{ textAlign: 'center', paddingBottom: '10px' }}>
-                <Button
-                    appearance="primary"
-                    onClick={onAddSentence}
-                    icon={<TargetArrow24Regular />}
-                >
-                    Add Selected Text
-                </Button>
-            </div>
+                    <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                        <Button
+                            appearance="primary"
+                            onClick={onAddSentence}
+                            icon={<TargetArrow24Regular />}
+                        >
+                            Add Selected Text
+                        </Button>
+                    </div>
 
-            {selectedSentences.length > 0 ? (
-                selectedSentences.map((sentence, index) => {
-                    if (completedIndices.includes(index)) return null; // Hide completed for now? Or show success state.
-
-                    return (
-                        <div key={index} className={styles.card}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '8px' }}>
-                                <Body1 style={{ fontStyle: "italic", color: "#333" }}>"{sentence}"</Body1>
-                                <Button
-                                    appearance="transparent"
-                                    icon={<Delete24Regular />}
-                                    onClick={() => onRemoveSentence(index)}
-                                    aria-label="Remove"
-                                />
+                    {selectedSentences.length === 0 ? (
+                        <div style={{ textAlign: "center", marginTop: "20px", color: "#666" }}>
+                            <Wand24Regular style={{ fontSize: "40px", marginBottom: "10px", color: "#ccc" }} />
+                            <Body1>No sentences added yet.</Body1>
+                        </div>
+                    ) : (
+                        <div
+                            className={styles.card}
+                            style={{ cursor: 'pointer', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+                            onClick={() => navigateToDetail(0)}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Body1 style={{ fontWeight: 600 }}>Sentences to Simplify</Body1>
                             </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Body1 style={{ fontWeight: 'bold' }}>{selectedSentences.length}</Body1>
+                                <ChevronRight24Regular style={{ color: "#0078d4" }} />
+                            </div>
+                        </div>
+                    )}
+                </>
+            )}
 
-                            {!rewrites[index] && (
-                                <Button
-                                    icon={<Wand24Regular />}
-                                    onClick={() => handleGenerate(index)}
-                                    disabled={loadingIndices.includes(index)}
-                                >
-                                    {loadingIndices.includes(index) ? "Generating..." : "Simplify"}
-                                </Button>
-                            )}
+            {viewMode === 'detail' && selectedSentences[currentIndex] && (
+                <>
+                    <div className={styles.reviewNav}>
+                        <button className={styles.backButton} onClick={() => setViewMode('list')}>
+                            <Dismiss24Regular />
+                        </button>
+                        <Body1>{currentIndex + 1} of {selectedSentences.length}</Body1>
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                            <Button
+                                icon={<TargetArrow24Regular />}
+                                appearance="subtle"
+                                onClick={() => onLocateSentence(selectedSentences[currentIndex].tag)}
+                                aria-label="Locate"
+                            />
+                            <Button
+                                icon={<Delete24Regular />}
+                                appearance="subtle"
+                                onClick={() => {
+                                    onRemoveSentence(currentIndex);
+                                    if (selectedSentences.length <= 1) setViewMode('list');
+                                    else if (currentIndex >= selectedSentences.length - 1) setCurrentIndex(currentIndex - 1);
+                                }}
+                                aria-label="Remove"
+                            />
+                        </div>
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                            <Button
+                                icon={<ChevronLeft24Regular />} // Correcting order/grouping
+                                appearance="subtle"
+                                disabled={currentIndex === 0}
+                                onClick={prevItem}
+                            />
+                            <Button
+                                icon={<ChevronRight24Regular />}
+                                appearance="subtle"
+                                disabled={currentIndex >= selectedSentences.length - 1}
+                                onClick={nextItem}
+                            />
+                        </div>
+                    </div>
 
-                            {loadingIndices.includes(index) && <Spinner size="tiny" />}
+                    {error && (
+                        <div style={{ padding: "8px", backgroundColor: "#fde7e9", color: "#a80000", borderRadius: "4px", border: "1px solid #d13438", marginBottom: "8px" }}>
+                            {error}
+                        </div>
+                    )}
 
-                            {rewrites[index] && (
+                    <div className={styles.card}>
+                        <Body1 style={{ fontStyle: "italic", color: "#333", marginBottom: "12px", display: "block" }}>
+                            "{selectedSentences[currentIndex].text}"
+                        </Body1>
+
+                        {(() => {
+                            const item = selectedSentences[currentIndex];
+                            const suggestion = rewrites[item.tag]; // Now a string (or array of 1, but we treat as string for simple view?)
+                            // Wait, rewrites state type needs update or we cast.
+                            // Let's assume rewrites is Record<string, string> now.
+                            // I need to update state def too in next tool call or do multireplace?
+                            // I'll do multireplace to be safe.
+                            const isLoading = loadingTags.includes(item.tag);
+
+                            if (!suggestion) {
+                                return (
+                                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                                        <Button
+                                            appearance="primary"
+                                            icon={<Wand24Regular />}
+                                            onClick={() => handleGenerate(item)}
+                                            disabled={isLoading}
+                                        >
+                                            {isLoading ? "Generating..." : "Simplify this sentence"}
+                                        </Button>
+                                    </div>
+                                );
+                            }
+
+                            return (
                                 <div className={styles.optionsContainer}>
-                                    <Body1 style={{ fontWeight: 600 }}>Select an option:</Body1>
-                                    <RadioGroup
-                                        value={selectedOption[index]}
-                                        onChange={(_, data) => setSelectedOption(prev => ({ ...prev, [index]: data.value }))}
-                                    >
-                                        {rewrites[index].map((opt, i) => (
-                                            <Radio
-                                                key={i}
-                                                value={opt}
-                                                label={opt}
-                                                style={{ marginBottom: '4px', padding: '4px', border: selectedOption[index] === opt ? "1px solid #0078d4" : "1px solid transparent", borderRadius: "4px" }}
-                                            />
-                                        ))}
-                                    </RadioGroup>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                        <Body1 style={{ fontWeight: 600 }}>Suggestion:</Body1>
+                                        <Button
+                                            appearance="subtle"
+                                            icon={<ArrowCounterclockwise24Regular />}
+                                            onClick={() => handleGenerate(item)}
+                                            disabled={isLoading}
+                                            aria-label="Redo"
+                                            title="Regenerate"
+                                        />
+                                    </div>
+                                    <div className={styles.optionCard} style={{ marginBottom: '16px', backgroundColor: '#f0f0f0', cursor: 'default' }}>
+                                        <Body1>{suggestion}</Body1>
+                                    </div>
 
                                     <Button
                                         appearance="primary"
-                                        disabled={!selectedOption[index]}
-                                        onClick={() => handleApply(index)}
+                                        onClick={() => handleApply(item.tag)}
                                         icon={<CheckmarkCircle24Regular />}
+                                        style={{ width: '100%' }}
                                     >
-                                        Apply Replacement
+                                        Replace & Remove
                                     </Button>
                                 </div>
-                            )}
-                        </div>
-                    );
-                })
-            ) : (
-                <div style={{ textAlign: "center", marginTop: "20px", color: "#666" }}>
-                    <Wand24Regular style={{ fontSize: "40px", marginBottom: "10px", color: "#ccc" }} />
-                    <Body1>No sentences added yet.</Body1>
-                </div>
+                            );
+                        })()}
+
+                        {(loadingTags.includes(selectedSentences[currentIndex].tag)) && <Spinner size="tiny" />}
+                    </div>
+                </>
             )}
         </div>
     );

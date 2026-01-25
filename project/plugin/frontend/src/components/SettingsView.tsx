@@ -32,10 +32,12 @@ const useStyles = makeStyles({
 interface SettingsViewProps {
     ignoredWords: string[];
     onUnignore: (word: string) => void;
+    disabledRules: string[];
+    onEnableRule: (ruleId: string) => void;
     onBack: () => void;
 }
 
-export const SettingsView: React.FC<SettingsViewProps> = ({ ignoredWords, onUnignore, onBack }) => {
+export const SettingsView: React.FC<SettingsViewProps> = ({ ignoredWords, onUnignore, disabledRules, onEnableRule, onBack }) => {
     const styles = useStyles();
 
     return (
@@ -72,6 +74,35 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ ignoredWords, onUnig
                                     appearance="subtle"
                                     onClick={() => onUnignore(word)}
                                     aria-label={`Remove ${word} from ignore list`}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <div style={{ marginTop: '32px' }}>
+                <Body1 style={{ fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>
+                    Disabled Rules
+                </Body1>
+                <Body1 style={{ color: '#666', marginBottom: '16px', display: 'block' }}>
+                    These rules are currently disabled. Remove them to start checking for them again.
+                </Body1>
+
+                {disabledRules.length === 0 ? (
+                    <div style={{ padding: '20px', textAlign: 'center', color: '#888', fontStyle: 'italic' }}>
+                        No rules disabled.
+                    </div>
+                ) : (
+                    <div className={styles.list}>
+                        {disabledRules.map(ruleId => (
+                            <div key={ruleId} className={styles.item}>
+                                <Body1>{ruleId}</Body1>
+                                <Button
+                                    icon={<Delete24Regular />}
+                                    appearance="subtle"
+                                    onClick={() => onEnableRule(ruleId)}
+                                    aria-label={`Enable rule ${ruleId}`}
                                 />
                             </div>
                         ))}
