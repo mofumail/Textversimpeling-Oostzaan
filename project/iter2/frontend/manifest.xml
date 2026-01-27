@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OfficeApp xsi:type="TaskPaneApp" xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides/1.0">
+  <Id>05c2e1c9-3e1d-406e-9a91-db2d7b429e79</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Contoso</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Dutch Municipal Writer"/>
+  <Description DefaultValue="AI-assisted writing support for Dutch municipal documents."/>
+  <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png"/>
+  <SupportUrl DefaultValue="https://www.contoso.com/help"/>
+  <AppDomains>
+    <AppDomain>https://localhost:3000</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Document"/>
+  </Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://localhost:3000/index.html"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides/1.0" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Word">
+        <DesktopFormFactor>
+          <GetStarted>
+            <Title xsi:type="bt:ShortResourceName" DefaultValue="Get Started with Dutch Writer"/>
+            <Description xsi:type="bt:LongResourceName" DefaultValue="Click the button to open the task pane."/>
+            <LearnMoreUrl DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812"/>
+          </GetStarted>
+          <FunctionFile Resid="Commands.Url"/>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <CustomTab id="TabDefault">
+              <Group id="msgp1">
+                <Label xsi:type="bt:ShortResourceName" DefaultValue="Dutch Writer"/>
+                <Icon>
+                  <bt:Image size="16" usedStyle="Standard" residue="Icon.16x16"/>
+                  <bt:Image size="32" usedStyle="Standard" residue="Icon.32x32"/>
+                  <bt:Image size="80" usedStyle="Standard" residue="Icon.80x80"/>
+                </Icon>
+                <Control xsi:type="Button" id="TaskPaneButton">
+                  <Label xsi:type="bt:ShortResourceName" DefaultValue="Open Writer"/>
+                  <Supertip>
+                    <Title xsi:type="bt:ShortResourceName" DefaultValue="Open Dutch Writer"/>
+                    <Description xsi:type="bt:LongResourceName" DefaultValue="Opens the writing assistant task pane."/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" usedStyle="Standard" residue="Icon.16x16"/>
+                    <bt:Image size="32" usedStyle="Standard" residue="Icon.32x32"/>
+                    <bt:Image size="80" usedStyle="Standard" residue="Icon.80x80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>ButtonId1</TaskpaneId>
+                    <SourceLocation residue="Taskpane.Url"/>
+                  </Action>
+                </Control>
+              </Group>
+            </CustomTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html"/>
+        <bt:Url id="Commands.Url" DefaultValue="https://localhost:3000/commands.html"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="GroupLabel" DefaultValue="Dutch Writer"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="GroupTooltip" DefaultValue="Opens the Dutch Municipal Writer add-in"/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>
