@@ -11,8 +11,8 @@ Dutch municipalities must write to residents at language level **B1**, which abo
 ## Highlights
 
 - **Fine-tuned LLM.** We QLoRA fine-tuned [`UWV/leesplank-noot-eurollm-1.7b`](https://huggingface.co/UWV/leesplank-noot-eurollm-1.7b), a Dutch simplification model built on EuroLLM-1.7B, on **1,310 anonymised complex → simple sentence pairs** of municipal text.
-- **Results:** SARI rose from **29.82** (base model) to **56.18** while keeping meaning, with a **BERTScore of 0.95**. The model is published on Hugging Face as [`uaebn/leesplank-municipal`](https://huggingface.co/uaebn/leesplank-municipal).
-- **Human evaluation.** In a blind study, **12 annotators** rated outputs for fluency, adequacy and simplicity. The fine-tuned model scored above the human-written simplifications on fluency and simplicity. Inter-rater agreement was measured with Krippendorff's α.
+- **Results:** on the held-out test set, SARI rose from **29.92** (base model) to **59.26**, with a **BERTScore of 0.95** for meaning preservation. The model is published on Hugging Face as [`uaebn/leesplank-municipal`](https://huggingface.co/uaebn/leesplank-municipal).
+- **Human evaluation.** In a blind study, **12 annotators** made 480 judgements of fluency, adequacy and simplicity. The fine-tuned model scored highest on all three and beat the human-written simplifications on fluency (4.02 vs 3.77) and simplicity (4.12 vs 3.93). Inter-rater agreement was measured with Krippendorff's α.
 - **On-premises by design.** The model is served locally (GGUF through LM Studio's OpenAI-compatible server), so no municipal text leaves the organisation's infrastructure (GDPR).
 - **Word add-in.** An Office.js task pane (React + Fluent UI) combines rule-based checks against the municipality's style guide with one-click B1 rewrites.
 
@@ -37,7 +37,7 @@ project/
 
 ## Evaluation
 
-Automatic metrics were computed on a held-out split (1,000 train / 150 eval / 160 test) and compared against three references: the unchanged source (identity), the human reference simplification, and the un-tuned base model:
+The 1,310 pairs were split into 1,000 train, 150 validation and 160 held-out test pairs. All approaches were scored on the test set with these metrics:
 
 | Metric | What it measures |
 | --- | --- |
@@ -46,14 +46,27 @@ Automatic metrics were computed on a held-out split (1,000 train / 150 eval / 16
 | **Flesch-Douma**, **LiNT-II** | Dutch readability |
 | Avg. word length, words / sentence | Surface-level complexity |
 
-Results of the fine-tuned model ([model card](https://huggingface.co/uaebn/leesplank-municipal)):
+Results on the held-out test set (N = 160). For LiNT-II, lower means easier to read.
 
-| Metric | Score |
-| --- | --- |
-| SARI | **56.18** |
-| BERTScore | **0.95** |
-| LiNT-II (score – level) | **48.76 – 2.69** |
-| Flesch-Douma | **52.68** |
+| | SARI ↑ | BERTScore ↑ | Flesch-Douma ↑ | LiNT-II level ↓ | Avg. length |
+| --- | --- | --- | --- | --- | --- |
+| Source (input) | – | – | 54.89 | 2.85 | 17.29 |
+| Human reference | – | 0.92 | 58.42 | 2.61 | 16.24 |
+| Lexical substitution only | 24.98 | 0.87 | 53.39 | 2.93 | 16.14 |
+| Base model | 29.92 | 0.78 | 74.53 | 1.55 | 25.35 |
+| Fine-tuned (iteration 1) | 30.81 | 0.80 | 72.57 | 1.68 | 23.49 |
+| **Fine-tuned (iteration 2)** | **59.26** | **0.95** | 56.60 | 2.69 | **15.62** |
+
+The base model and iteration 1 "simplify" by expanding sentences (high Flesch-Douma, but long outputs and low meaning preservation). Iteration 2 used a much larger LoRA capacity (r = 64, α = 128, all attention and MLP projections), which removed that expansion bias and brought every metric close to the human reference.
+
+Human evaluation, as mean opinion scores on a 1–5 scale:
+
+| | Fluency | Adequacy | Simplicity |
+| --- | --- | --- | --- |
+| Base model | 3.83 | 4.53 | 4.07 |
+| Fine-tuned (iteration 1) | 3.93 | 4.53 | 4.01 |
+| **Fine-tuned (iteration 2)** | **4.02** | **4.67** | **4.12** |
+| Human reference | 3.77 | 4.63 | 3.93 |
 
 In the human evaluation, 12 annotators each rated 20 sentences from the baseline, the fine-tuned model and the human reference on **fluency**, **adequacy** and **simplicity**, across both model iterations.
 
