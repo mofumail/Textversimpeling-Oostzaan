@@ -11,7 +11,7 @@ Dutch municipalities must write to residents at language level **B1**, which abo
 ## Highlights
 
 - **Fine-tuned LLM.** We QLoRA fine-tuned [`UWV/leesplank-noot-eurollm-1.7b`](https://huggingface.co/UWV/leesplank-noot-eurollm-1.7b), a Dutch simplification model built on EuroLLM-1.7B, on **1,310 anonymised complex → simple sentence pairs** of municipal text.
-- **Results:** SARI went from **29.9 to 59.3** over the base model while keeping meaning, with a **BERTScore of 0.95**.
+- **Results:** SARI rose from **29.82** (base model) to **56.18** while keeping meaning, with a **BERTScore of 0.95**. The model is published on Hugging Face as [`uaebn/leesplank-municipal`](https://huggingface.co/uaebn/leesplank-municipal).
 - **Human evaluation.** In a blind study, **12 annotators** rated outputs for fluency, adequacy and simplicity. The fine-tuned model scored above the human-written simplifications on fluency and simplicity. Inter-rater agreement was measured with Krippendorff's α.
 - **On-premises by design.** The model is served locally (GGUF through LM Studio's OpenAI-compatible server), so no municipal text leaves the organisation's infrastructure (GDPR).
 - **Word add-in.** An Office.js task pane (React + Fluent UI) combines rule-based checks against the municipality's style guide with one-click B1 rewrites.
@@ -45,6 +45,15 @@ Automatic metrics were computed on a held-out split (1,000 train / 150 eval / 16
 | **BERTScore** | Meaning preservation relative to the source |
 | **Flesch-Douma**, **LiNT-II** | Dutch readability |
 | Avg. word length, words / sentence | Surface-level complexity |
+
+Results of the fine-tuned model ([model card](https://huggingface.co/uaebn/leesplank-municipal)):
+
+| Metric | Score |
+| --- | --- |
+| SARI | **56.18** |
+| BERTScore | **0.95** |
+| LiNT-II (score – level) | **48.76 – 2.69** |
+| Flesch-Douma | **52.68** |
 
 In the human evaluation, 12 annotators each rated 20 sentences from the baseline, the fine-tuned model and the human reference on **fluency**, **adequacy** and **simplicity**, across both model iterations.
 
